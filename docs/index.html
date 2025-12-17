@@ -242,22 +242,35 @@
 
         function servoOpen() { db.ref("home/servo").set(90); }
         function servoClose() { db.ref("home/servo").set(0); }
-        //CHECK BOX
-        function setStatus(message, color) {
-            const statusBox = document.getElementById("statusBox");
-            statusBox.innerText = "Status: " + message;
-            statusBox.className = "alert text-center"; // reset classes
-            if (color === "green") statusBox.classList.add("alert-success");
-            else if (color === "red") statusBox.classList.add("alert-danger");
-            else if (color === "blue") statusBox.classList.add("alert-info");
-            else statusBox.classList.add("alert-primary");
-        }
+       
 
-        // Example usage:
-        setStatus("Online", "green");   // shows green "Online"
-        setStatus("Offline", "red");    // shows red "Offline"
-        setStatus("Waiting...", "blue"); // shows blue waiting
-    </script>
+
+    // Status box function
+    function setStatus(message, color) {
+        const statusBox = document.getElementById("statusBox");
+        statusBox.innerText = "Status: " + message;
+        statusBox.className = "alert text-center"; // reset classes
+        if (color === "green") statusBox.classList.add("alert-success");
+        else if (color === "red") statusBox.classList.add("alert-danger");
+        else if (color === "blue") statusBox.classList.add("alert-info");
+        else statusBox.classList.add("alert-primary");
+    }
+
+    // Check device heartbeat
+    var statusRef = db.ref("home/lastUpdate");
+    statusRef.on("value", function(snapshot) {
+        let ts = snapshot.val(); // timestamp in seconds
+        let now = Math.floor(Date.now() / 1000);
+        if (ts && (now - ts < 6)) {  // 5s heartbeat, 6s window
+            setStatus("Online", "green");
+        } else {
+            setStatus("Offline", "red");
+        }
+    });
+
+
+</script>  
+
 
 </body>
 

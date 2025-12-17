@@ -20,6 +20,8 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
+unsigned long lastHeartbeat = 0;  
+
 // Last values
 int lastLed = -1;
 int lastFan = -1;
@@ -55,6 +57,15 @@ void setup() {
 }
 
 void loop() {
+  unsigned long currentTime = millis();
+
+  // ===== HEARTBEAT: update every 5 seconds =====
+  if (currentTime - lastHeartbeat > 5000) {
+    Firebase.RTDB.setString(&fbdo, "/home/deviceStatus", "online");
+    Firebase.RTDB.setInt(&fbdo, "/home/lastUpdate", currentTime / 1000);
+    lastHeartbeat = currentTime;
+    Serial.println("Heartbeat sent");
+  }
 
   // ===== LED =====
   if (Firebase.RTDB.getInt(&fbdo, "/home/led")) {
