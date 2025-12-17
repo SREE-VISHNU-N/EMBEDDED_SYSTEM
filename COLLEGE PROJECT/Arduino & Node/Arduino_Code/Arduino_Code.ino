@@ -20,7 +20,7 @@ void setup() {
   motor1.run(RELEASE);
 
   myServo.attach(9);
-  myServo.write(0);
+  myServo.write(90);
 
   Serial.println("System Ready");
 }
